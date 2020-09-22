@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
 const app = require('express')();
 const FBAuth = require('./util/fbAuth');
+const admin = require('firebase-admin');
 
 const cors = require('cors');
 app.use(cors());
@@ -45,6 +46,18 @@ app.get('/user/:handle', getUserDetails);
 app.post('/notifications', FBAuth, markNotificationsRead);
 
 exports.api = functions.https.onRequest(app);
+
+exports.getChild = functions.https.onRequest((req,res)=>{
+  admin.firestore().collection('Children').get()
+  .then(data=>{
+    let Children = [];
+    data.forEach(doc => {
+      Children.push(doc.data());
+    });
+    return res.json(Children);
+  })
+  .catch(err => console.error(err));
+})
 
 exports.createNotificationOnLike = functions
   .firestore.document('likes/{id}')
