@@ -33,6 +33,11 @@ const {
   markNotificationsRead,
 } = require("./handlers/users");
 
+const {
+  getChildrenDetails,
+} = require("./handlers/children");
+
+
 // assessment routes
 app.get("/questions", getQuestions);
 app.get("/question/:month", getQuestion);
@@ -59,6 +64,10 @@ app.post("/user", FBAuth, addUserDetails);
 app.get("/user", FBAuth, getAuthenticatedUser);
 app.get("/user/:handle", getUserDetails);
 app.post("/notifications", FBAuth, markNotificationsRead);
+
+// Children routes
+app.get("/Children/:handle", getChildrenDetails);
+
 
 exports.api = functions.https.onRequest(app);
 
