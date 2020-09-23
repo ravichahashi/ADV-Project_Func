@@ -12,7 +12,7 @@ const {
   getQuestion,
   postQuestions,
   getAssessment,
-} = require("./handlers/assessment");
+} = require("./handlers/assessments");
 
 const {
   getAllScreams,
@@ -34,7 +34,7 @@ const {
 } = require("./handlers/users");
 
 const {
-  getChildrenDetails,
+  getChild,
 } = require("./handlers/children");
 
 
@@ -43,9 +43,6 @@ app.get("/questions", getQuestions);
 app.get("/question/:month", getQuestion);
 app.post("/questions", postQuestions);
 app.get("/assessment/:childId", getAssessment);
-
-// child routes
-// app.get("/child/:childId", getChild);
 
 // Scream routes
 app.get("/screams", getAllScreams);
@@ -65,8 +62,8 @@ app.get("/user", FBAuth, getAuthenticatedUser);
 app.get("/user/:handle", getUserDetails);
 app.post("/notifications", FBAuth, markNotificationsRead);
 
-// Children routes
-app.get("/Children/:handle", getChildrenDetails);
+// children routes
+app.get("/child/:childId", getChild);
 
 
 exports.api = functions.https.onRequest(app);

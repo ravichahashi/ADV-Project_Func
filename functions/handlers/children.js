@@ -1,42 +1,16 @@
-const { admin, db } = require("../util/admin");
+const { db } = require("../util/admin");
 
-const config = require("../util/config");
-const { uuid } = require("uuidv4");
-
-const firebase = require("firebase");
-firebase.initializeApp(config);
-
-exports.getChildrenDetails = (req, res) => {
-  let childrenData = {};
-  db.doc(`/Children/${req.params.handle}`)
+exports.getChild = (req, res) => {
+  let childData = {};
+  db.doc(`/children/${req.params.childId}`)
     .get()
     .then((doc) => {
-      if (doc.exists) {
-        childrenData.Children = doc.data();
-        return db
-          .collection("Children")
-          .where("childrenHandle", "==", req.params.handle)
-          .orderBy("createdAt", "desc")
-          .get();
-      } else {
-        return res.status(404).json({ errror: "Children not found" });
+      if (!doc.exists) {
+        return res.status(404).json({ errror: "Child not found" });
       }
-    })
-    .then((data) => {
-      childrenData.Children = [];
-      data.forEach((doc) => {
-        childrenData.Children.push({
-          name: doc.data().name,
-          //   date: doc.data().date of birth,
-          weight: doc.data().weight,
-          high: doc.data().high,
-          nursid: doc.data().nursID,
-          userid: doc.data().userID,
-          score: doc.data().score,
-          childrenId: doc.id,
-        });
-      });
-      return res.json(childrenData);
+      childData = doc.data();
+      childData.childId = doc.id;
+      return res.json(childData);
     })
     .catch((err) => {
       console.error(err);
