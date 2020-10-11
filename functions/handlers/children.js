@@ -42,6 +42,18 @@ exports.addChild = (req, res) => {
   const newChild = {
     ...req.body,
     userHandle: req.user.handle,
+    score: {
+      DSPM: {
+        GM: 0,
+        FM: 0,
+        RL: 0,
+        EL: 0,
+        PS: 0,
+      },
+    },
+    assessmentResult: [],
+    createdAt: new Date().toISOString(),
+    imageUrl: "",
   };
   db.collection("children")
     .add(newChild)
