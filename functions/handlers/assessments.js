@@ -2,6 +2,7 @@ const { db } = require("../util/admin");
 
 exports.getQuestions = (req, res) => {
   db.collection("questions")
+    .orderBy("month")
     .get()
     .then((data) => {
       let question = [];
@@ -42,6 +43,7 @@ exports.getQuestion = (req, res) => {
 exports.postQuestions = (req, res) => {
   const data = req.body;
   data.forEach((newQuestion) => {
+    newQuestion.month = parseInt(newQuestion.month);
     db.collection("questions")
       .add(newQuestion)
       .then((doc) => {
