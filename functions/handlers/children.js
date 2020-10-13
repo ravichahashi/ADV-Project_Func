@@ -2,14 +2,16 @@ const { db } = require("../util/admin");
 
 exports.getChild = (req, res) => {
   let childData = {};
-  db.doc(`/children/${req.params.childId}`)
+  db.collection("children")
+    .where("userHandle", "==", req.user.handle)
+    .where("name", "==", req.params.childName)
     .get()
-    .then((doc) => {
-      if (!doc.exists) {
-        return res.status(404).json({ errror: "Child not found" });
-      }
-      childData = doc.data();
-      childData.childId = doc.id;
+    .then((data) => {
+      let childData = {};
+      data.forEach((doc) => {
+        childData = doc.data();
+        childData.id = doc.id;
+      });
       return res.json(childData);
     })
     .catch((err) => {
@@ -27,7 +29,7 @@ exports.getChildren = (req, res) => {
       let childData = {};
       data.forEach((doc) => {
         childData = doc.data();
-        childData.childId = doc.id;
+        childData.id = doc.id;
         children.push(childData);
       });
       return res.json(children);
@@ -42,13 +44,23 @@ exports.addChild = (req, res) => {
   const newChild = {
     ...req.body,
     userHandle: req.user.handle,
+    nurseryName: "-",
     score: {
       DSPM: {
-        GM: 0,
-        FM: 0,
-        RL: 0,
-        EL: 0,
-        PS: 0,
+        parent: {
+          GM: 0,
+          FM: 0,
+          RL: 0,
+          EL: 0,
+          PS: 0,
+        },
+        nursery: {
+          GM: 0,
+          FM: 0,
+          RL: 0,
+          EL: 0,
+          PS: 0,
+        },
       },
     },
     assessmentResult: [],
@@ -59,11 +71,49 @@ exports.addChild = (req, res) => {
     .add(newChild)
     .then((doc) => {
       const resChild = newChild;
-      resChild.childId = doc.id;
+      resChild.id = doc.id;
       res.json(resChild);
     })
     .catch((err) => {
       res.status(500).json({ error: "something went wrong" });
       console.error(err);
     });
+};
+
+exports.updateScoreChild = (req, res) => {
+  const childId = req.params.childId;
+  const scoreType = req.params.scoreType;
+  const userType = req.user.type;
+  const newScore = req.body;
+  switch (scoreType) {
+    case "DSPM":
+      if (userType == "parent") {
+        db.doc(`/children/${childId}`)
+          .update({
+            "score.DSPM.parent": newScore,
+          })
+          .then((doc) => {
+            res.json(doc);
+          })
+          .catch((err) => {
+            res.status(500).json({ error: "something went wrong" });
+            console.error(err);
+          });
+      } else {
+        db.doc(`/children/${childId}`)
+          .update({
+            "score.DSPM.nursery": newScore,
+          })
+          .then((doc) => {
+            res.json(doc);
+          })
+          .catch((err) => {
+            res.status(500).json({ error: "something went wrong" });
+            console.error(err);
+          });
+      }
+      break;
+    default:
+      break;
+  }
 };

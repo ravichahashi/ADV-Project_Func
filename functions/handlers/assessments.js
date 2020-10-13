@@ -9,7 +9,7 @@ exports.getQuestions = (req, res) => {
       let questionData = {};
       data.forEach((doc) => {
         questionData = doc.data();
-        questionData.questionId = doc.id;
+        questionData.id = doc.id;
         question.push(questionData);
       });
       return res.json(question);
@@ -29,10 +29,9 @@ exports.getQuestion = (req, res) => {
       let questionData = {};
       data.forEach((doc) => {
         questionData = doc.data();
-        questionData.questionId = doc.id;
-        question.push(questionData);
+        questionData.id = doc.id;
       });
-      return res.json(question);
+      return res.json(questionData);
     })
     .catch((err) => {
       console.error(err);
@@ -48,7 +47,7 @@ exports.postQuestions = (req, res) => {
       .add(newQuestion)
       .then((doc) => {
         const resQuestion = newQuestion;
-        resQuestion.questionId = doc.id;
+        resQuestion.id = doc.id;
         res.json(resQuestion);
       })
       .catch((err) => {
@@ -72,7 +71,7 @@ exports.getAssessment = (req, res) => {
       .add(newQuestion)
       .then((doc) => {
         const resQuestion = newQuestion;
-        resQuestion.questionId = doc.id;
+        resQuestion.id = doc.id;
         res.json(resQuestion);
       })
       .catch((err) => {

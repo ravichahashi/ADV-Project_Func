@@ -33,7 +33,12 @@ const {
   markNotificationsRead,
 } = require("./handlers/users");
 
-const { getChild, getChildren, addChild } = require("./handlers/children");
+const {
+  getChild,
+  getChildren,
+  addChild,
+  updateScoreChild,
+} = require("./handlers/children");
 
 // assessment routes
 app.get("/questions", getQuestions);
@@ -60,9 +65,10 @@ app.get("/user/:handle", getUserDetails);
 app.post("/notifications", FBAuth, markNotificationsRead);
 
 // children routes
-app.get("/child/:childId", getChild);
+app.get("/child/:childName", FBAuth, getChild);
 app.get("/children", FBAuth, getChildren);
 app.post("/child", FBAuth, addChild);
+app.post("/child/:childId/score/:scoreType", FBAuth, updateScoreChild);
 
 exports.api = functions.https.onRequest(app);
 
